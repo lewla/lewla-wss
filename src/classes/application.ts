@@ -1,6 +1,7 @@
 import { WebSocketServer, type WebSocket } from 'ws'
 import { pool } from '../db/index.js'
 import * as memberModel from '../db/member.js'
+import * as channelModel from '../db/channel.js'
 import { actions } from '../actions/index.js'
 import { type BaseAction } from '../actions/base.js'
 import { type Pool } from 'pg'
@@ -11,6 +12,7 @@ export class Application {
     public actions: Map<string, typeof BaseAction>
     public members: Map<string, memberModel.Member>
     public connections: Map<WebSocket, { member?: memberModel.Member }>
+    public channels: Map<string, channelModel.Channel>
 
     constructor () {
         this.wss = new WebSocketServer({ host: '127.0.0.1', port: 8280 })
@@ -18,11 +20,15 @@ export class Application {
         this.actions = actions
         this.members = new Map()
         this.connections = new Map()
+        this.channels = new Map()
     }
 
     async setup (): Promise<void> {
         const membersList = await memberModel.getAll()
         membersList.forEach(member => { this.members.set(member.id, member) })
+
+        const channelsList = await channelModel.getAll()
+        channelsList.forEach(channel => { this.channels.set(channel.id, channel) })
 
         this.wss.on('connection', (ws, message) => {
             ws.on('error', (err) => { console.error(err) })
