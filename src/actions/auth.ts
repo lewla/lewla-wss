@@ -1,6 +1,7 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from './base.js'
 import { app } from '../index.js'
+import jwt from 'jsonwebtoken'
 
 interface AuthData {
     token: string
@@ -42,26 +43,43 @@ export class AuthAction extends BaseAction {
     }
 
     public handle (): void {
-        const member = app.members.get(this.body.data.token)
-        if (member != null) {
-            app.connections.set(this.sender, { member })
+        jwt.verify(this.body.data.token, process.env.JWT_SECRET ?? '', (err, decoded) => {
+            if (err !== null) {
+                console.error(err)
+                return
+            }
+            if (decoded === undefined || typeof decoded === 'string') {
+                console.error('Invalid token payload')
+                return
+            }
 
-            const authenticatedData: AuthenticatedData = {
-                member: {
-                    id: member.id,
-                    username: member.username,
-                    display_name: member.display_name,
-                    creation_date: member.creation_date,
-                    avatar_url: member.avatar_url,
+            const memberId = decoded.member
+            if (typeof memberId !== 'string') {
+                console.error('Invalid token payload')
+                return
+            }
+
+            const member = app.members.get(this.body.data.token)
+            if (member !== undefined) {
+                app.connections.set(this.sender, { member })
+
+                const authenticatedData: AuthenticatedData = {
+                    member: {
+                        id: member.id,
+                        username: member.username,
+                        display_name: member.display_name,
+                        creation_date: member.creation_date,
+                        avatar_url: member.avatar_url,
+                    }
                 }
-            }
-            const setupData: SetupData = {
-                channels: Array.from(app.channels.values()),
-                members: Array.from(app.members.values()).map(member => { return { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } }),
-            }
+                const setupData: SetupData = {
+                    channels: Array.from(app.channels.values()),
+                    members: Array.from(app.members.values()).map(member => { return { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } }),
+                }
 
-            this.sender.send(JSON.stringify({ action: 'authenticated', data: authenticatedData }))
-            this.sender.send(JSON.stringify({ action: 'setup', data: setupData }))
-        }
+                this.sender.send(JSON.stringify({ action: 'authenticated', data: authenticatedData }))
+                this.sender.send(JSON.stringify({ action: 'setup', data: setupData }))
+            }
+        })
     }
 }
