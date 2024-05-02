@@ -51,11 +51,17 @@ export class Application {
                                 throw new Error('No data provided')
                             }
                         } else {
-                            throw new Error('Unsupported action')
+                            throw new Error('Unsupported action: ' + messageAction)
                         }
+                    } else {
+                        throw new Error('No action provided')
                     }
                 } catch (error) {
-                    console.error(error)
+                    if (error instanceof Error) {
+                        console.error(error.name + ': ' + error.message)
+                    } else {
+                        console.error(error)
+                    }
                     ws.send(JSON.stringify({ type: 'error', data: { message: 'Error handling message' } }))
                 }
             })
