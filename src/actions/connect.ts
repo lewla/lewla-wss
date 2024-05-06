@@ -4,7 +4,7 @@ import { app } from '../index.js'
 
 interface MemberConnectedData {
     member: string
-    timestamp: number
+    timestamp?: number
 }
 
 export class MemberConnectedAction extends BaseAction {
@@ -14,6 +14,12 @@ export class MemberConnectedAction extends BaseAction {
     constructor (sender: WebSocket, body: { data: MemberConnectedData }) {
         super(sender, body)
         this.body = body
+
+        if (
+            typeof this.body.data.member !== 'string'
+        ) {
+            throw new Error('Invalid payload')
+        }
     }
 
     public handle (): void {

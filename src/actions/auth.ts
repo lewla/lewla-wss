@@ -40,6 +40,12 @@ export class AuthAction extends BaseAction {
     constructor (sender: WebSocket, body: { data: AuthData }) {
         super(sender, body)
         this.body = body
+
+        if (
+            typeof this.body.data.token !== 'string'
+        ) {
+            throw new Error('Invalid payload')
+        }
     }
 
     public handle (): void {

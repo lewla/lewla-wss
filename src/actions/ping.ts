@@ -16,6 +16,12 @@ export class PingAction extends BaseAction {
     constructor (sender: WebSocket, body: { data: PingData }) {
         super(sender, body)
         this.body = body
+
+        if (
+            typeof this.body.data.timestamp !== 'number'
+        ) {
+            throw new Error('Invalid payload')
+        }
     }
 
     public handle (): void {
