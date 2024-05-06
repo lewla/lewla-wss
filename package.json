@@ -8,6 +8,7 @@
     "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
+    "argon2": "^0.40.1",
     "jsonwebtoken": "^9.0.2",
     "npm": "^10.5.2",
     "pg": "^8.11.3",

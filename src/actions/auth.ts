@@ -51,41 +51,40 @@ export class AuthAction extends BaseAction {
     public handle (): void {
         jwt.verify(this.body.data.token, process.env.JWT_SECRET ?? '', (err, decoded) => {
             if (err !== null) {
-                console.error(err)
-                return
+                throw new Error('Invalid token payload')
             }
             if (decoded === undefined || typeof decoded === 'string') {
-                console.error('Invalid token payload')
-                return
+                throw new Error('Invalid token payload')
             }
 
             const memberId = decoded.member
             if (typeof memberId !== 'string') {
-                console.error('Invalid token payload')
-                return
+                throw new Error('Invalid token payload')
             }
 
-            const member = app.members.get(this.body.data.token)
-            if (member !== undefined) {
-                app.connections.set(this.sender, { member })
-
-                const authenticatedData: AuthenticatedData = {
-                    member: {
-                        id: member.id,
-                        username: member.username,
-                        display_name: member.display_name,
-                        creation_date: member.creation_date,
-                        avatar_url: member.avatar_url,
-                    }
-                }
-                const setupData: SetupData = {
-                    channels: Array.from(app.channels.values()),
-                    members: Array.from(app.members.values()).map(member => { return { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } }),
-                }
-
-                this.sender.send(JSON.stringify({ action: 'authenticated', data: authenticatedData }))
-                this.sender.send(JSON.stringify({ action: 'setup', data: setupData }))
+            const member = app.members.get(memberId)
+            if (member === undefined) {
+                throw new Error('Invalid token payload')
             }
+
+            app.connections.set(this.sender, { member })
+
+            const authenticatedData: AuthenticatedData = {
+                member: {
+                    id: member.id,
+                    username: member.username,
+                    display_name: member.display_name,
+                    creation_date: member.creation_date,
+                    avatar_url: member.avatar_url,
+                }
+            }
+            const setupData: SetupData = {
+                channels: Array.from(app.channels.values()),
+                members: Array.from(app.members.values()).map(member => { return { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } }),
+            }
+
+            this.sender.send(JSON.stringify({ action: 'authenticated', data: authenticatedData }))
+            this.sender.send(JSON.stringify({ action: 'setup', data: setupData }))
         })
     }
 }

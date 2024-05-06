@@ -20,6 +20,11 @@ export const getById = async (id: string): Promise<Member[]> => {
     return result.rows
 }
 
+export const getByUsername = async (username: string): Promise<Member[]> => {
+    const result = await app.db.query('SELECT id, username, display_name, password, avatar_url, email_address, creation_date FROM member WHERE username = $1', [username.toLowerCase()])
+    return result.rows
+}
+
 export const create = async (member: Member): Promise<boolean> => {
     const result = await app.db.query(`
         INSERT INTO member
@@ -27,6 +32,6 @@ export const create = async (member: Member): Promise<boolean> => {
         VALUES
             ($1, $2, $3, $4, $5, $6)
     `,
-    [member.id, member.username, member.display_name, member.password, member.avatar_url, member.email_address])
+    [member.id, member.username.toLowerCase(), member.display_name, member.password, member.avatar_url, member.email_address])
     return result.rowCount === 1
 }
