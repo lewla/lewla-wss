@@ -71,7 +71,7 @@ export class Application {
                     } else {
                         console.error(error)
                     }
-                    ws.send(JSON.stringify({ type: 'action', data: { message: 'Error handling message' } }))
+                    ws.send(JSON.stringify({ action: 'error', data: { message: 'Error handling message' } }))
                 }
             })
         })
