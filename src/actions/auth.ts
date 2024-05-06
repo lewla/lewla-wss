@@ -67,7 +67,7 @@ export class AuthAction extends BaseAction {
                 throw new Error('Invalid token payload')
             }
 
-            app.connections.set(this.sender, { member })
+            app.connections.set(this.sender, { member: { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } })
 
             const authenticatedData: AuthenticatedData = {
                 member: {

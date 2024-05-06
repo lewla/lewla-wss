@@ -11,7 +11,16 @@ export class Application {
     public db: Pool
     public actions: Map<string, typeof BaseAction>
     public members: Map<string, memberModel.Member>
-    public connections: Map<WebSocket, { member?: memberModel.Member }>
+    public connections: Map<WebSocket, {
+        member?: {
+            id: string
+            username: string
+            display_name: string
+            avatar_url: string | null
+            creation_date: Date
+        }
+    }>
+
     public channels: Map<string, channelModel.Channel>
 
     constructor () {
