@@ -30,6 +30,7 @@ interface SetupData {
         display_name: string
         creation_date: Date
         avatar_url: string | null
+        status: 'online' | 'offline' | 'busy' | 'away'
     }>
 }
 
@@ -69,6 +70,9 @@ export class AuthAction extends BaseAction {
 
             app.connections.set(this.sender, { member: { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } })
 
+            const onlineMembers = Array.from(app.connections.values()).map(connection => connection.member)
+            const onlineMembersIds = onlineMembers.map(onlineMember => onlineMember?.id)
+
             const authenticatedData: AuthenticatedData = {
                 member: {
                     id: member.id,
@@ -80,7 +84,18 @@ export class AuthAction extends BaseAction {
             }
             const setupData: SetupData = {
                 channels: Array.from(app.channels.values()),
-                members: Array.from(app.members.values()).map(member => { return { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } }),
+                members: Array.from(app.members.values()).map(
+                    member => {
+                        return {
+                            id: member.id,
+                            avatar_url: member.avatar_url,
+                            creation_date: member.creation_date,
+                            display_name: member.display_name,
+                            username: member.username,
+                            status: onlineMembersIds.includes(member.id) ? 'online' : 'offline'
+                        }
+                    }
+                ),
             }
 
             this.sender.send(JSON.stringify({ action: 'authenticated', data: authenticatedData }))
