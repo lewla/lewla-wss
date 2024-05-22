@@ -4,18 +4,19 @@ import { BaseAction } from './base.js'
 import { randomUUID } from 'crypto'
 import { hash } from 'argon2'
 import { app } from '../index.js'
+import { sendError } from '../helpers/messaging.js'
 
-interface MemberRegisterData {
+interface RegisterData {
     username: string
     password: string
     email_address?: string
 }
 
-export class MemberRegisterAction extends BaseAction {
-    public static identifier = 'memberregister'
-    public body: { data: MemberRegisterData }
+export class RegisterAction extends BaseAction {
+    public static identifier = 'register'
+    public body: { data: RegisterData }
 
-    constructor (sender: WebSocket, body: { data: MemberRegisterData }) {
+    constructor (sender: WebSocket, body: { data: RegisterData }) {
         super(sender, body)
         this.body = body
 
@@ -53,14 +54,14 @@ export class MemberRegisterAction extends BaseAction {
                     password: passwordHash
                 })
             } else {
-                this.sender.send(JSON.stringify({ action: 'error', data: { message: 'Error occurred when creating member' } }))
+                sendError(this.sender, 'Error occurred when creating member')
             }
         }).catch((reason) => {
+            let error = 'Error occurred when creating member'
             if (reason.code === '23505') {
-                this.sender.send(JSON.stringify({ action: 'error', data: { message: 'Username already exists' } }))
-            } else {
-                this.sender.send(JSON.stringify({ action: 'error', data: { message: 'Error occurred when creating member' } }))
+                error = 'Username already exists'
             }
+            sendError(this.sender, error)
         })
     }
 }

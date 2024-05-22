@@ -3,21 +3,19 @@ import * as memberModel from '../db/member.js'
 import { BaseAction } from './base.js'
 import { verify } from 'argon2'
 import jwt from 'jsonwebtoken'
+import { TokenAction } from './token.js'
+import { sendError, sendSuccess } from '../helpers/messaging.js'
 
-interface MemberLoginData {
+interface LoginData {
     username: string
     password: string
 }
 
-interface TokenData {
-    token: string
-}
+export class LoginAction extends BaseAction {
+    public static identifier = 'login'
+    public body: { data: LoginData }
 
-export class MemberLoginAction extends BaseAction {
-    public static identifier = 'memberlogin'
-    public body: { data: MemberLoginData }
-
-    constructor (sender: WebSocket, body: { data: MemberLoginData }) {
+    constructor (sender: WebSocket, body: { data: LoginData }) {
         super(sender, body)
         this.body = body
 
@@ -35,20 +33,19 @@ export class MemberLoginAction extends BaseAction {
                 if (members.length > 0) {
                     verify(members[0].password, this.body.data.password).then((success) => {
                         if (success) {
-                            const data: TokenData = {
-                                token: jwt.sign({ member: members[0].id }, process.env.JWT_SECRET ?? '')
-                            }
+                            const token = jwt.sign({ member: members[0].id }, process.env.JWT_SECRET ?? '')
+                            const tokenAction = new TokenAction(this.sender, { data: { token } })
+                            tokenAction.send(this.sender)
 
-                            this.sender.send(JSON.stringify({ action: 'token', data }))
-                            this.sender.send(JSON.stringify({ action: 'success', data: { message: 'Login successful' } }))
+                            sendSuccess(this.sender, 'Login successful')
                         } else {
-                            this.sender.send(JSON.stringify({ action: 'error', data: { message: 'Invalid username or password' } }))
+                            sendError(this.sender, 'Invalid username or password')
                         }
                     }).catch((reason) => {
-                        this.sender.send(JSON.stringify({ action: 'error', data: { message: 'Error occurred when logging in' } }))
+                        sendError(this.sender, 'Error occurred when logging in')
                     })
                 } else {
-                    this.sender.send(JSON.stringify({ action: 'error', data: { message: 'Invalid username or password' } }))
+                    sendError(this.sender, 'Invalid username or password')
                 }
             })
             .catch((reason) => {

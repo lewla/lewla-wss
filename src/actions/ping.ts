@@ -1,11 +1,8 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from './base.js'
+import { PongAction } from './pong.js'
 
 interface PingData {
-    timestamp: number
-}
-
-interface PongData {
     timestamp: number
 }
 
@@ -25,10 +22,7 @@ export class PingAction extends BaseAction {
     }
 
     public handle (): void {
-        const data: PongData = {
-            timestamp: this.body.data.timestamp,
-        }
-
-        this.sender.send(JSON.stringify({ action: 'pong', data }))
+        const pong = new PongAction(this.sender, { data: { timestamp: this.body.data.timestamp } })
+        pong.send(this.sender)
     }
 }
