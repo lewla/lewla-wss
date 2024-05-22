@@ -1,14 +1,14 @@
 import { type BaseAction } from './base.js'
-import { MemberConnectedAction } from './connect.js'
-import { MemberRegisterAction } from './register.js'
+import { ConnectedAction } from './connected.js'
+import { RegisterAction } from './register.js'
 import { AuthAction } from './auth.js'
 import { PingAction } from './ping.js'
-import { MemberLoginAction } from './login.js'
+import { LoginAction } from './login.js'
 
 export const actions = new Map<string, typeof BaseAction>([
-    [MemberConnectedAction.identifier, MemberConnectedAction],
-    [MemberRegisterAction.identifier, MemberRegisterAction],
+    [ConnectedAction.identifier, ConnectedAction],
+    [RegisterAction.identifier, RegisterAction],
     [AuthAction.identifier, AuthAction],
     [PingAction.identifier, PingAction],
-    [MemberLoginAction.identifier, MemberLoginAction],
+    [LoginAction.identifier, LoginAction],
 ])

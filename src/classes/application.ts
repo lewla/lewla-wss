@@ -5,10 +5,14 @@ import * as channelModel from '../db/channel.js'
 import { actions } from '../actions/index.js'
 import { type BaseAction } from '../actions/base.js'
 import { type Pool } from 'pg'
+import { sendError } from '../helpers/messaging.js'
 
 export class Application {
     public wss: WebSocketServer
     public db: Pool
+    /**
+     * Map of actions that can be handled by the Websocket Server
+     */
     public actions: Map<string, typeof BaseAction>
     public members: Map<string, memberModel.Member>
     public connections: Map<WebSocket, {
@@ -71,7 +75,7 @@ export class Application {
                     } else {
                         console.error(error)
                     }
-                    ws.send(JSON.stringify({ action: 'error', data: { message: 'Error handling message' } }))
+                    sendError(ws, 'Error handling message')
                 }
             })
         })
