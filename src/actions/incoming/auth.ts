@@ -1,9 +1,9 @@
 import { type WebSocket } from 'ws'
-import { BaseAction } from './base.js'
-import { app } from '../index.js'
+import { BaseAction } from '../base.js'
+import { app } from '../../index.js'
 import jwt from 'jsonwebtoken'
-import { AuthenticatedAction } from './authenticated.js'
-import { SetupAction } from './setup.js'
+import { AuthenticatedAction } from '../outgoing/authenticated.js'
+import { SetupAction } from '../outgoing/setup.js'
 
 interface AuthData {
     token: string

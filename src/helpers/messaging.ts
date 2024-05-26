@@ -1,6 +1,6 @@
 import { type WebSocket } from 'ws'
-import { ErrorAction } from '../actions/error.js'
-import { SuccessAction } from '../actions/success.js'
+import { ErrorAction } from '../actions/outgoing/error.js'
+import { SuccessAction } from '../actions/outgoing/success.js'
 
 export const sendError = (target: WebSocket, message: string): void => {
     const action = new ErrorAction(target, { data: { message } })

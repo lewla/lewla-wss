@@ -1,6 +1,6 @@
 import { type WebSocket } from 'ws'
-import { BaseAction } from './base.js'
-import { PongAction } from './pong.js'
+import { BaseAction } from '../base.js'
+import { PongAction } from '../outgoing/pong.js'
 
 interface PingData {
     timestamp: number
