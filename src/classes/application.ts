@@ -2,7 +2,8 @@ import { WebSocketServer, type WebSocket } from 'ws'
 import { pool } from '../db/index.js'
 import * as memberModel from '../db/member.js'
 import * as channelModel from '../db/channel.js'
-import { actions } from '../actions/index.js'
+import * as messageModel from '../db/message.js'
+import { actions } from '../actions/incoming/index.js'
 import { type BaseAction } from '../actions/base.js'
 import { type Pool } from 'pg'
 import { sendError } from '../helpers/messaging.js'
@@ -26,6 +27,7 @@ export class Application {
     }>
 
     public channels: Map<string, channelModel.Channel>
+    public messages: Map<string, messageModel.Message>
 
     constructor () {
         this.wss = new WebSocketServer({ host: '127.0.0.1', port: 8280 })
@@ -34,6 +36,7 @@ export class Application {
         this.members = new Map()
         this.connections = new Map()
         this.channels = new Map()
+        this.messages = new Map()
     }
 
     async setup (): Promise<void> {
@@ -42,6 +45,9 @@ export class Application {
 
         const channelsList = await channelModel.getAll()
         channelsList.forEach(channel => { this.channels.set(channel.id, channel) })
+
+        const messageList = await messageModel.getAll()
+        messageList.forEach(message => { this.messages.set(message.id, message) })
 
         this.wss.on('connection', (ws, message) => {
             ws.on('error', (err) => { console.error(err) })

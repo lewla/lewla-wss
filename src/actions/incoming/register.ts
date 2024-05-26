@@ -1,10 +1,10 @@
 import { type WebSocket } from 'ws'
-import * as memberModel from '../db/member.js'
-import { BaseAction } from './base.js'
+import * as memberModel from '../../db/member.js'
+import { BaseAction } from '../base.js'
 import { randomUUID } from 'crypto'
 import { hash } from 'argon2'
-import { app } from '../index.js'
-import { sendError } from '../helpers/messaging.js'
+import { app } from '../../index.js'
+import { sendError } from '../../helpers/messaging.js'
 
 interface RegisterData {
     username: string

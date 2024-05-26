@@ -1,5 +1,5 @@
 import { type WebSocket } from 'ws'
-import { BaseAction } from './base.js'
+import { BaseAction } from '../base.js'
 
 interface SetupData {
     channels: Array<{
@@ -15,6 +15,20 @@ interface SetupData {
         avatar_url: string | null
         status: string
         creation_date: string
+    }>
+    messages: Array<{
+        id: string
+        timestamp: string
+        member: string
+        channel: string
+        type: string
+        body: {
+            text?: string
+            components?: Array<{
+                type: string
+                data: any
+            }>
+        }
     }>
 }
 
