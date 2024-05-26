@@ -1,10 +1,10 @@
 import { type WebSocket } from 'ws'
-import * as memberModel from '../db/member.js'
-import { BaseAction } from './base.js'
+import * as memberModel from '../../db/member.js'
+import { BaseAction } from '../base.js'
 import { verify } from 'argon2'
 import jwt from 'jsonwebtoken'
-import { TokenAction } from './token.js'
-import { sendError, sendSuccess } from '../helpers/messaging.js'
+import { TokenAction } from '../outgoing/token.js'
+import { sendError, sendSuccess } from '../../helpers/messaging.js'
 
 interface LoginData {
     username: string

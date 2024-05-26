@@ -1,5 +1,5 @@
 import { type WebSocket } from 'ws'
-import { BaseAction } from './base.js'
+import { BaseAction } from '../base.js'
 
 interface TokenData {
     token: string
