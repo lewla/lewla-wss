@@ -16,6 +16,20 @@ interface SetupData {
         status: string
         creation_date: string
     }>
+    messages: Array<{
+        id: string
+        timestamp: string
+        member: string
+        channel: string
+        type: string
+        body: {
+            text?: string
+            components?: Array<{
+                type: string
+                data: any
+            }>
+        }
+    }>
 }
 
 export class SetupAction extends BaseAction {

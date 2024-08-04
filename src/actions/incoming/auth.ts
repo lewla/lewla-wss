@@ -79,11 +79,12 @@ export class AuthAction extends BaseAction {
                             }
                         }
                     ),
+                    messages: Array.from(app.messages.values())
                 }
             })
 
-            authenticatedAction.send(this.sender)
             setupAction.send(this.sender)
+            authenticatedAction.send(this.sender)
         })
     }
 }

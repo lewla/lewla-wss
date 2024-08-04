@@ -4,6 +4,7 @@ import { app } from '../../index.js'
 import { sendError } from '../../helpers/messaging.js'
 import { randomUUID } from 'crypto'
 import { MessageAction as OutgoingMessageAction } from '../outgoing/message.js'
+import * as messageModel from '../../db/message.js'
 
 interface MessageData {
     channel: string
@@ -47,13 +48,32 @@ export class MessageAction extends BaseAction {
             return
         }
 
+        const id = randomUUID()
+        const timestamp = new Date().toISOString()
+
+        const messageData = {
+            id,
+            channel: channel.id,
+            member: member.id,
+            timestamp,
+            type: this.body.data.type,
+            body: this.body.data.body
+        }
+
+        messageModel.create(messageData).catch(
+            (error) => {
+                console.error(error)
+            }
+        )
+        app.messages.set(messageData.id, messageData)
+
         const message = new OutgoingMessageAction(
             this.sender,
             {
                 data: {
-                    id: randomUUID(),
+                    id,
                     member: member.id,
-                    timestamp: new Date().toISOString(),
+                    timestamp,
                     channel: channel.id,
                     type: this.body.data.type,
                     body: this.body.data.body
