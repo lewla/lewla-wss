@@ -9,8 +9,8 @@ export class PongAction extends BaseAction {
     public static identifier = 'pong'
     public body: { data: PongData }
 
-    constructor (sender: WebSocket, body: { data: PongData }) {
-        super(sender, body)
+    constructor (sender: WebSocket, body: { data: PongData }, id?: string) {
+        super(sender, body, id)
         this.body = body
 
         if (
