@@ -10,8 +10,8 @@ export class PingAction extends BaseAction {
     public static identifier = 'ping'
     public body: { data: PingData }
 
-    constructor (sender: WebSocket, body: { data: PingData }) {
-        super(sender, body)
+    constructor (sender: WebSocket, body: { data: PingData }, id?: string) {
+        super(sender, body, id)
         this.body = body
 
         if (
@@ -22,7 +22,7 @@ export class PingAction extends BaseAction {
     }
 
     public handle (): void {
-        const pong = new PongAction(this.sender, { data: { timestamp: this.body.data.timestamp } })
+        const pong = new PongAction(this.sender, { data: { timestamp: this.body.data.timestamp } }, this.id)
         pong.send(this.sender)
     }
 }

@@ -59,12 +59,13 @@ export class Application {
                     }
                     const message = JSON.parse(data.toString('utf-8')) ?? []
                     const messageAction = message.action
+                    const messageId = message.id
 
                     if (typeof messageAction === 'string') {
                         const Action = this.actions.get(messageAction.toLowerCase())
                         if (Action != null) {
                             if ('data' in message) {
-                                const action = new Action(ws, { data: message.data })
+                                const action = new Action(ws, { data: message.data }, (typeof messageId === 'string' ? messageId : undefined))
                                 action.handle()
                             } else {
                                 throw new Error('No data provided')
