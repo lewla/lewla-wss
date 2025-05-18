@@ -25,4 +25,13 @@ export class BaseAction {
             })
         }
     }
+
+    public broadcast (target: Set<WebSocket>): void {
+        const identifier = (this.constructor as typeof BaseAction).identifier ?? ''
+        target.forEach((ws) => {
+            if (ws !== this.sender) {
+                ws.send(JSON.stringify({ id: this.id, action: identifier, data: this.body.data }))
+            }
+        })
+    }
 }

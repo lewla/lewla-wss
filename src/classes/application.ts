@@ -7,6 +7,7 @@ import { actions } from '../actions/incoming/index.js'
 import { type BaseAction } from '../actions/base.js'
 import { type Pool } from 'pg'
 import { sendError } from '../helpers/messaging.js'
+import { SFU } from './sfu.js'
 
 export class Application {
     public wss: WebSocketServer
@@ -28,15 +29,17 @@ export class Application {
 
     public channels: Map<string, channelModel.Channel>
     public messages: Map<string, messageModel.Message>
+    public sfu: SFU
 
     constructor () {
-        this.wss = new WebSocketServer({ host: '127.0.0.1', port: 8280 })
+        this.wss = new WebSocketServer({ port: 8280 })
         this.db = pool
         this.actions = actions
         this.members = new Map()
         this.connections = new Map()
         this.channels = new Map()
         this.messages = new Map()
+        this.sfu = new SFU()
     }
 
     async setup (): Promise<void> {
@@ -78,7 +81,7 @@ export class Application {
                     }
                 } catch (error) {
                     if (error instanceof Error) {
-                        console.error(error.name + ': ' + error.message)
+                        console.error(error.stack)
                     } else {
                         console.error(error)
                     }
