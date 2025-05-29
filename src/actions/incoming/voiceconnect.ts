@@ -32,6 +32,12 @@ export class VoiceConnectAction extends BaseAction {
                     (router) => {
                         app.sfu.routers.set(channel, router)
 
+                        for (const transport of app.sfu.transports.values()) {
+                            if (transport.appData.memberId === member) {
+                                transport.close()
+                            }
+                        }
+
                         const message = new OutgoingVoiceConnectAction(this.sender, { data: { member, channel } })
                         message.send(app.wss.clients)
 
@@ -44,6 +50,12 @@ export class VoiceConnectAction extends BaseAction {
             } else {
                 const router = app.sfu.routers.get(channel)
                 if (router !== undefined) {
+                    for (const transport of app.sfu.transports.values()) {
+                        if (transport.appData.memberId === member) {
+                            transport.close()
+                        }
+                    }
+
                     const message = new OutgoingVoiceConnectAction(this.sender, { data: { member, channel } })
                     message.send(app.wss.clients)
 

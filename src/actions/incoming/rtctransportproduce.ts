@@ -5,6 +5,8 @@ import { app } from '../../index.js'
 import { RTCTransportProducedAction } from '../outgoing/rtctransportproduced.js'
 import { sendError } from '../../helpers/messaging.js'
 import { RTCNewProducerAction } from '../outgoing/rtcnewproducer.js'
+import { RTCProducerClosedAction } from '../outgoing/rtcproducerclosed.js'
+import { VoiceDisconnectAction } from '../outgoing/voicedisconnect.js'
 
 interface RTCTransportProduceData {
     transportId: string
@@ -38,7 +40,7 @@ export class RTCTransportProduceAction extends BaseAction {
         const channel = app.channels.get(this.body.data.channelId)
 
         if (member === undefined) {
-            sendError(this.sender, 'Invalid member')
+            sendError(this.sender, 'Invalid member', this.id)
             return
         }
 
@@ -50,6 +52,7 @@ export class RTCTransportProduceAction extends BaseAction {
 
         this.body.data.appData.memberId = member.id
         this.body.data.appData.channelId = channel.id
+        this.body.data.appData.connection = this.sender
 
         transport.produce({
             kind: this.body.data.kind,
@@ -62,10 +65,18 @@ export class RTCTransportProduceAction extends BaseAction {
             producedAction.send(this.sender)
 
             const newProducer = new RTCNewProducerAction(this.sender, { data: { producerId: producer.id, rtpParameters: producer.rtpParameters, memberId: member.id, channelId: channel.id } })
-            newProducer.send(app.wss.clients)
+            newProducer.broadcast(app.wss.clients)
+
+            producer.observer.on('close', () => {
+                app.sfu.producers.delete(producer.id)
+                const producerClosed = new RTCProducerClosedAction(this.sender, { data: { producerId: producer.id } })
+                producerClosed.send(app.wss.clients)
+                const voiceDisconnect = new VoiceDisconnectAction(this.sender, { data: { member: member.id, channel: channel.id } })
+                voiceDisconnect.send(app.wss.clients)
+            })
         }).catch((error) => {
             console.error(error)
-            sendError(this.sender, 'Error setting up producer')
+            sendError(this.sender, 'Error setting up producer', this.id)
         })
     }
 }

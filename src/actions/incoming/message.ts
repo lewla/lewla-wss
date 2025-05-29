@@ -40,11 +40,11 @@ export class MessageAction extends BaseAction {
         const channel = app.channels.get(this.body.data.channel)
 
         if (member === undefined) {
-            sendError(this.sender, 'Invalid member')
+            sendError(this.sender, 'Invalid member', this.id)
             return
         }
         if (channel === undefined) {
-            sendError(this.sender, 'Invalid channel')
+            sendError(this.sender, 'Invalid channel', this.id)
             return
         }
 

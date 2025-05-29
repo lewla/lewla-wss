@@ -54,7 +54,14 @@ export class Application {
 
         this.wss.on('connection', (ws, message) => {
             ws.on('error', (err) => { console.error(err) })
-            ws.on('close', (code, reason) => { this.connections.delete(ws) })
+            ws.on('close', (code, reason) => {
+                this.connections.delete(ws)
+                for (const transport of this.sfu.transports.values()) {
+                    if (ws === transport.appData.connection) {
+                        transport.close()
+                    }
+                }
+            })
             ws.on('message', (data) => {
                 try {
                     if (!(data instanceof Buffer)) {

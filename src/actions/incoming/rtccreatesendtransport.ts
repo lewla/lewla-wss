@@ -29,6 +29,7 @@ export class RTCCreateSendTransportAction extends BaseAction {
         const router = app.sfu.routers.get(this.body.data.channelId)
         const worker = app.sfu.workers.get('test')
         const member = app.connections.get(this.sender)?.member
+        const channel = app.channels.get(this.body.data.channelId)
 
         if (worker === undefined) {
             return
@@ -36,7 +37,7 @@ export class RTCCreateSendTransportAction extends BaseAction {
 
         const server = app.sfu.servers.get(worker)
 
-        if (server === undefined || router === undefined || member === undefined) {
+        if (server === undefined || router === undefined || member === undefined || channel === undefined) {
             return
         }
 
@@ -49,6 +50,7 @@ export class RTCCreateSendTransportAction extends BaseAction {
             preferUdp: true,
             appData: {
                 memberId: member.id,
+                channelId: channel.id,
                 connection: this.sender,
                 type: 'send'
             }
@@ -63,9 +65,13 @@ export class RTCCreateSendTransportAction extends BaseAction {
                 iceCandidates: transport.iceCandidates,
                 dtlsParameters: transport.dtlsParameters,
                 sctpParameters: transport.sctpParameters,
-                channelId: this.body.data.channelId
+                channelId: channel.id
             }
         })
         createTransport.send(this.sender)
+
+        transport.observer.on('close', () => {
+            app.sfu.transports.delete(transport.id)
+        })
     }
 }
