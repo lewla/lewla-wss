@@ -37,15 +37,15 @@ export class LoginAction extends BaseAction {
                             const tokenAction = new TokenAction(this.sender, { data: { token } })
                             tokenAction.send(this.sender)
 
-                            sendSuccess(this.sender, 'Login successful')
+                            sendSuccess(this.sender, 'Login successful', this.id)
                         } else {
-                            sendError(this.sender, 'Invalid username or password')
+                            sendError(this.sender, 'Invalid username or password', this.id)
                         }
                     }).catch((reason) => {
-                        sendError(this.sender, 'Error occurred when logging in')
+                        sendError(this.sender, 'Error occurred when logging in', this.id)
                     })
                 } else {
-                    sendError(this.sender, 'Invalid username or password')
+                    sendError(this.sender, 'Invalid username or password', this.id)
                 }
             })
             .catch((reason) => {

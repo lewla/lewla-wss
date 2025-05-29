@@ -30,6 +30,11 @@ interface SetupData {
             }>
         }
     }>
+    voiceUsers: Array<{
+        member: string
+        channel: string
+        type: string
+    }>
 }
 
 export class SetupAction extends BaseAction {

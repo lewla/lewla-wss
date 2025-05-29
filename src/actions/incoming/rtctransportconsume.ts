@@ -61,12 +61,16 @@ export class RTCTransportConsumeAction extends BaseAction {
                     }
                 )
                 consumeAction.send(this.sender)
+
+                consumer.observer.on('close', () => {
+                    app.sfu.consumers.delete(consumer.id)
+                })
             }).catch((reason) => {
                 console.error(reason)
-                sendError(this.sender, 'Error setting up consumer')
+                sendError(this.sender, 'Error setting up consumer', this.id)
             })
         } else {
-            sendError(this.sender, 'Cannot consume this producer')
+            sendError(this.sender, 'Cannot consume this producer', this.id)
         }
     }
 }
