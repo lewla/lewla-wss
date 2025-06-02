@@ -59,7 +59,7 @@ export class SFU {
     }
 
     public getTurnServers (memberId: string): Array<{ credential: string, urls: string | string[], username: string }> {
-        const ts = (Date.now() / 1000) + (1 * 3600)
+        const ts = Math.floor(Date.now() / 1000) + (1 * 3600)
         const user = [ts, memberId].join(':')
         const hmac = createHmac('sha1', process.env.TURN_SECRET ?? '')
         hmac.setEncoding('base64')
