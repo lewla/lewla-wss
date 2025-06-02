@@ -65,7 +65,8 @@ export class RTCCreateSendTransportAction extends BaseAction {
                 iceCandidates: transport.iceCandidates,
                 dtlsParameters: transport.dtlsParameters,
                 sctpParameters: transport.sctpParameters,
-                channelId: channel.id
+                channelId: channel.id,
+                iceServers: app.sfu.getTurnServers(member.id)
             }
         })
         createTransport.send(this.sender)

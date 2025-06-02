@@ -9,6 +9,7 @@ interface RTCCreateSendTransportData {
     dtlsParameters: types.DtlsParameters
     sctpParameters: types.SctpParameters | undefined
     channelId: string
+    iceServers: RTCIceServer[]
 }
 
 export class RTCCreateSendTransportAction extends BaseAction {

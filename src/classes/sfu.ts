@@ -1,3 +1,4 @@
+import { createHmac } from 'crypto'
 import * as mediasoup from 'mediasoup'
 import type { types } from 'mediasoup'
 
@@ -55,5 +56,19 @@ export class SFU {
         this.servers.set(worker, server)
 
         return worker
+    }
+
+    public getTurnServers (memberId: string): Array<{ credential: string, urls: string | string[], username: string }> {
+        const ts = (Date.now() / 1000) + (1 * 3600)
+        const user = [ts, memberId].join(':')
+        const hmac = createHmac('sha1', process.env.TURN_SECRET ?? '')
+        hmac.setEncoding('base64')
+        hmac.write(user)
+        hmac.end()
+        const pw = hmac.read()
+
+        return [
+            { credential: pw, urls: process.env.TURN_URL ?? 'turn:127.0.0.1:3478', username: user }
+        ]
     }
 }
