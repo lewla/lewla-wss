@@ -5,6 +5,7 @@ import { sendError } from '../../helpers/messaging.js'
 import { randomUUID } from 'crypto'
 import { MessageAction as OutgoingMessageAction } from '../outgoing/message.js'
 import * as messageModel from '../../db/message.js'
+import { escapeHtmlChars } from '../../helpers/text.js'
 
 interface MessageData {
     channel: string
@@ -50,6 +51,10 @@ export class MessageAction extends BaseAction {
 
         const id = randomUUID()
         const timestamp = new Date().toISOString()
+
+        if (typeof this.body.data.body.text === 'string') {
+            this.body.data.body.text = escapeHtmlChars(this.body.data.body.text)
+        }
 
         const messageData = {
             id,
