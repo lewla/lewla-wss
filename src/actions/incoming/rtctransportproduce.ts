@@ -74,6 +74,10 @@ export class RTCTransportProduceAction extends BaseAction {
                 const voiceDisconnect = new VoiceDisconnectAction(this.sender, { data: { member: member.id, channel: channel.id } })
                 voiceDisconnect.send(app.wss.clients)
             })
+
+            producer.on('transportclose', () => {
+                producer.close()
+            })
         }).catch((error) => {
             console.error(error)
             sendError(this.sender, 'Error setting up producer', this.id)

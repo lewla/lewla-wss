@@ -65,6 +65,10 @@ export class RTCTransportConsumeAction extends BaseAction {
                 consumer.observer.on('close', () => {
                     app.sfu.consumers.delete(consumer.id)
                 })
+
+                consumer.on('transportclose', () => {
+                    consumer.close()
+                })
             }).catch((reason) => {
                 console.error(reason)
                 sendError(this.sender, 'Error setting up consumer', this.id)
