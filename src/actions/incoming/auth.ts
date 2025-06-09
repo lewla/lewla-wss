@@ -6,6 +6,7 @@ import { AuthenticatedAction } from '../outgoing/authenticated.js'
 import { SetupAction } from '../outgoing/setup.js'
 import { sendError } from '../../helpers/messaging.js'
 import { UnauthAction } from '../outgoing/unauth.js'
+import { MemberStatusChangeAction } from '../outgoing/memberstatuschange.js'
 
 interface AuthData {
     token: string
@@ -109,6 +110,9 @@ export class AuthAction extends BaseAction {
 
             setupAction.send(this.sender)
             authenticatedAction.send(this.sender)
+
+            const statusMsg = new MemberStatusChangeAction(this.sender, { data: { member: member.id, status: 'online' } })
+            statusMsg.send(app.wss.clients)
         })
     }
 }
