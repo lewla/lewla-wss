@@ -15,8 +15,8 @@ export class LoginAction extends BaseAction {
     public static identifier = 'login'
     public body: { data: LoginData }
 
-    constructor (sender: WebSocket, body: { data: LoginData }) {
-        super(sender, body)
+    constructor (sender: WebSocket, body: { data: LoginData }, id?: string) {
+        super(sender, body, id)
         this.body = body
 
         if (
