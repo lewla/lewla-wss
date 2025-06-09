@@ -8,6 +8,7 @@ import { type BaseAction } from '../actions/base.js'
 import { type Pool } from 'pg'
 import { sendError } from '../helpers/messaging.js'
 import { SFU } from './sfu.js'
+import { MemberStatusChangeAction } from '../actions/outgoing/memberstatuschange.js'
 
 export class Application {
     public wss: WebSocketServer
@@ -55,6 +56,13 @@ export class Application {
         this.wss.on('connection', (ws, message) => {
             ws.on('error', (err) => { console.error(err) })
             ws.on('close', (code, reason) => {
+                const member = this.connections.get(ws)?.member
+
+                if (member !== undefined) {
+                    const statusMsg = new MemberStatusChangeAction(ws, { data: { member: member.id, status: 'offline' } })
+                    statusMsg.send(this.wss.clients)
+                }
+
                 this.connections.delete(ws)
                 for (const transport of this.sfu.transports.values()) {
                     if (ws === transport.appData.connection) {
