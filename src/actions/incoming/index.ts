@@ -12,6 +12,7 @@ import { RTCTransportConnectAction } from './rtctransportconnect.js'
 import { RTCTransportProduceAction } from './rtctransportproduce.js'
 import { RTCTransportConsumeAction } from './rtctransportconsume.js'
 import { RTCGetProducersAction } from './rtcgetproducers.js'
+import { RTCProducerCloseAction } from './rtcproducerclose.js'
 
 export const actions = new Map<string, typeof BaseAction>([
     [ConnectedAction.identifier, ConnectedAction],
@@ -27,4 +28,5 @@ export const actions = new Map<string, typeof BaseAction>([
     [RTCTransportProduceAction.identifier, RTCTransportProduceAction],
     [RTCTransportConsumeAction.identifier, RTCTransportConsumeAction],
     [RTCGetProducersAction.identifier, RTCGetProducersAction],
+    [RTCProducerCloseAction.identifier, RTCProducerCloseAction],
 ])

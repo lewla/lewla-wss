@@ -31,7 +31,8 @@ export class SFU {
     public async createRouter (): Promise<mediasoup.types.Router> {
         const router = await this.workers.get('test')?.createRouter({
             mediaCodecs: [
-                { kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2 }
+                { kind: 'audio', mimeType: 'audio/opus', clockRate: 48000, channels: 2 },
+                { kind: 'video', mimeType: 'video/VP9', clockRate: 90000 }
             ]
         })
 

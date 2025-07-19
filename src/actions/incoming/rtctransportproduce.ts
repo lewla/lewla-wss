@@ -71,12 +71,12 @@ export class RTCTransportProduceAction extends BaseAction {
                 app.sfu.producers.delete(producer.id)
                 const producerClosed = new RTCProducerClosedAction(this.sender, { data: { producerId: producer.id } })
                 producerClosed.send(app.wss.clients)
-                const voiceDisconnect = new VoiceDisconnectAction(this.sender, { data: { member: member.id, channel: channel.id } })
-                voiceDisconnect.send(app.wss.clients)
             })
 
             producer.on('transportclose', () => {
                 producer.close()
+                const voiceDisconnect = new VoiceDisconnectAction(this.sender, { data: { member: member.id, channel: channel.id } })
+                voiceDisconnect.send(app.wss.clients)
             })
         }).catch((error) => {
             console.error(error)
