@@ -56,7 +56,7 @@ export class RTCTransportConsumeAction extends BaseAction {
                             producerId: consumer.producerId,
                             rtpParameters: consumer.rtpParameters,
                             appData: consumer.appData,
-                            kind: 'audio'
+                            kind: consumer.kind
                         }
                     }
                 )

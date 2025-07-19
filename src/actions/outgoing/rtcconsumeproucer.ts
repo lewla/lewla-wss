@@ -6,7 +6,7 @@ interface RTCConsumeProducerData {
     id: string
     rtpParameters: types.RtpParameters
     producerId: string
-    kind: 'audio' | 'video'
+    kind: types.MediaKind
     appData: types.AppData
 }
 
