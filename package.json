@@ -5,13 +5,17 @@
     "start:prod": "cross-env NODE_ENV=production node --env-file=.env dist/index.js",
     "start:dev": "cross-env NODE_ENV=development node --env-file=.env dist/index.js",
     "build": "tsc",
-    "lint": "eslint \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\"",
+    "migration:generate": "typeorm-ts-node-esm migration:generate ./src/db/migrations/InitSchema -d ./src/db/index.ts",
+    "migration:run": "typeorm-ts-node-esm migration:run -d ./src/db/index.ts"
   },
   "dependencies": {
     "argon2": "^0.40.1",
     "jsonwebtoken": "^9.0.2",
     "mediasoup": "^3.14.9",
     "pg": "^8.11.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.26",
     "ws": "^8.16.0"
   },
   "devDependencies": {

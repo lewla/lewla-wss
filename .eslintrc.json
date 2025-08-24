@@ -19,5 +19,6 @@
 		"@typescript-eslint/no-useless-constructor": "off",
 		"@typescript-eslint/comma-dangle": "off",
 		"import/extensions": ["error", "ignorePackages"]
-	}
+	},
+	"ignorePatterns": ["src/db/migrations/*.ts"]
 }
