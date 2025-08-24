@@ -2,7 +2,7 @@ import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 import type { types } from 'mediasoup'
 
-interface RTCCreateSendTransportData {
+interface Payload {
     id: string
     iceParameters: types.IceParameters
     iceCandidates: types.IceCandidate[]
@@ -14,9 +14,9 @@ interface RTCCreateSendTransportData {
 
 export class RTCCreateSendTransportAction extends BaseAction {
     public static identifier = 'rtccreatesendtransport'
-    public body: { data: RTCCreateSendTransportData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCCreateSendTransportData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

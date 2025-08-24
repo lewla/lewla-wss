@@ -8,7 +8,7 @@ import { escapeHtmlChars } from '../../helpers/text.js'
 import { Message } from '../../db/entity/message.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface MessageData {
+interface Payload {
     channel: string
     type: string
     body: {
@@ -22,9 +22,9 @@ interface MessageData {
 
 export class MessageAction extends BaseAction {
     public static identifier = 'message'
-    public body: { data: MessageData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: MessageData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

@@ -7,8 +7,9 @@ import { app } from '../../index.js'
 import { sendError, sendSuccess } from '../../helpers/messaging.js'
 import { TokenAction } from '../outgoing/token.js'
 import { Member } from '../../db/entity/member.js'
+import { MemberRegisteredAction } from '../outgoing/memberregistered.js'
 
-interface RegisterData {
+interface Payload {
     username: string
     password: string
     email_address?: string
@@ -16,9 +17,9 @@ interface RegisterData {
 
 export class RegisterAction extends BaseAction {
     public static identifier = 'register'
-    public body: { data: RegisterData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RegisterData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 
@@ -89,6 +90,18 @@ export class RegisterAction extends BaseAction {
             const tokenAction = new TokenAction(this.sender, { data: { token } })
             tokenAction.send(this.sender)
             sendSuccess(this.sender, 'Registration successful', this.id)
+
+            const registeredAction = new MemberRegisteredAction(this.sender, {
+                data: {
+                    id: memberId,
+                    display_name: this.body.data.username,
+                    avatar_url: null,
+                    creation_date: memberCreationDate.toISOString(),
+                    type: 'user',
+                    status: 'offline'
+                }
+            })
+            registeredAction.send(app.wss.clients)
         }).catch((reason) => {
             sendError(this.sender, 'Error occurred when creating member', this.id)
         })

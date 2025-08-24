@@ -2,7 +2,7 @@ import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 import type { types } from 'mediasoup'
 
-interface RTCConsumeProducerData {
+interface Payload {
     id: string
     rtpParameters: types.RtpParameters
     producerId: string
@@ -12,9 +12,9 @@ interface RTCConsumeProducerData {
 
 export class RTCConsumeProducerAction extends BaseAction {
     public static identifier = 'rtcconsumeproducer'
-    public body: { data: RTCConsumeProducerData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCConsumeProducerData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
         if (

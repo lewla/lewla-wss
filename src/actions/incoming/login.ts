@@ -7,16 +7,16 @@ import { sendError, sendSuccess } from '../../helpers/messaging.js'
 import { Member } from '../../db/entity/member.js'
 import { app } from '../../index.js'
 
-interface LoginData {
+interface Payload {
     username: string
     password: string
 }
 
 export class LoginAction extends BaseAction {
     public static identifier = 'login'
-    public body: { data: LoginData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: LoginData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 

@@ -9,7 +9,7 @@ import { RTCProducerClosedAction } from '../outgoing/rtcproducerclosed.js'
 import { VoiceDisconnectAction } from '../outgoing/voicedisconnect.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface RTCTransportProduceData {
+interface Payload {
     transportId: string
     kind: types.MediaKind
     rtpParameters: types.RtpParameters
@@ -19,9 +19,9 @@ interface RTCTransportProduceData {
 
 export class RTCTransportProduceAction extends BaseAction {
     public static identifier = 'rtctransportproduce'
-    public body: { data: RTCTransportProduceData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCTransportProduceData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 

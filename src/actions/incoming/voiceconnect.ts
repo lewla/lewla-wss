@@ -5,15 +5,15 @@ import { VoiceConnectAction as OutgoingVoiceConnectAction } from '../outgoing/vo
 import { RTPCapabilitiesAction } from '../outgoing/rtpcapabilities.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface VoiceConnectData {
+interface Payload {
     channel: string
 }
 
 export class VoiceConnectAction extends BaseAction {
     public static identifier = 'voiceconnect'
-    public body: { data: VoiceConnectData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: VoiceConnectData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

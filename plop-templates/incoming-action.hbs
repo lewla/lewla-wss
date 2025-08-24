@@ -2,11 +2,11 @@ import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
 interface Payload {
-    id: string
+    example: any
 }
 
-export class RTCTransportConnectedAction extends BaseAction {
-    public static identifier = 'rtctransportconnected'
+export class {{ pascalCase name }}Action extends BaseAction {
+    public static identifier = '{{ lowercase name }}'
     public body: { data: Payload }
 
     constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
@@ -14,9 +14,13 @@ export class RTCTransportConnectedAction extends BaseAction {
         this.body = body
 
         if (
-            typeof this.body.data.id !== 'string'
+            this.body.data.example === undefined
         ) {
             throw new Error('Invalid payload')
         }
+    }
+
+    public handle (): void {
+        console.debug(this.body.data)
     }
 }

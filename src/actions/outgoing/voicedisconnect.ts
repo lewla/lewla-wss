@@ -1,16 +1,16 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface VoiceDisconnectData {
+interface Payload {
     member: string
     channel: string
 }
 
 export class VoiceDisconnectAction extends BaseAction {
     public static identifier = 'voicedisconnect'
-    public body: { data: VoiceDisconnectData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: VoiceDisconnectData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

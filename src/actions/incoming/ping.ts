@@ -2,15 +2,15 @@ import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 import { PongAction } from '../outgoing/pong.js'
 
-interface PingData {
+interface Payload {
     timestamp: number
 }
 
 export class PingAction extends BaseAction {
     public static identifier = 'ping'
-    public body: { data: PingData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: PingData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 

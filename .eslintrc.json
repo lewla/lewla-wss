@@ -20,5 +20,9 @@
 		"@typescript-eslint/comma-dangle": "off",
 		"import/extensions": ["error", "ignorePackages"]
 	},
-	"ignorePatterns": ["src/db/migrations/*.ts"]
+	"ignorePatterns": [
+		"src/db/migrations/*.ts",
+		"plop-templates/*.js",
+		"plopfile*.js"
+	]
 }

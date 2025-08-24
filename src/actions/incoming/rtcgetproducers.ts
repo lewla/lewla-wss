@@ -3,15 +3,15 @@ import { BaseAction } from '../base.js'
 import { app } from '../../index.js'
 import { RTCNewProducerAction } from '../outgoing/rtcnewproducer.js'
 
-interface RTCGetProducersData {
+interface Payload {
     channelId: string
 }
 
 export class RTCGetProducersAction extends BaseAction {
     public static identifier = 'rtcgetproducers'
-    public body: { data: RTCGetProducersData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCGetProducersData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 
