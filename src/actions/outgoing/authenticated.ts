@@ -1,7 +1,7 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface AuthenticatedData {
+interface Payload {
     member: {
         id: string
         username: string
@@ -13,9 +13,9 @@ interface AuthenticatedData {
 
 export class AuthenticatedAction extends BaseAction {
     public static identifier = 'authenticated'
-    public body: { data: AuthenticatedData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: AuthenticatedData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

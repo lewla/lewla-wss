@@ -1,7 +1,7 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface MessageData {
+interface Payload {
     id: string
     timestamp: string
     member: string
@@ -18,9 +18,9 @@ interface MessageData {
 
 export class MessageAction extends BaseAction {
     public static identifier = 'message'
-    public body: { data: MessageData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: MessageData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

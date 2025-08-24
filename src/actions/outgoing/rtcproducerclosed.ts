@@ -1,15 +1,15 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface RTCProducerClosedData {
+interface Payload {
     producerId: string
 }
 
 export class RTCProducerClosedAction extends BaseAction {
     public static identifier = 'rtcproducerclosed'
-    public body: { data: RTCProducerClosedData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCProducerClosedData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 

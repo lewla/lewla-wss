@@ -11,15 +11,15 @@ import { Member } from '../../db/entity/member.js'
 import { Channel } from '../../db/entity/channel.js'
 import { Message } from '../../db/entity/message.js'
 
-interface AuthData {
+interface Payload {
     token: string
 }
 
 export class AuthAction extends BaseAction {
     public static identifier = 'auth'
-    public body: { data: AuthData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: AuthData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

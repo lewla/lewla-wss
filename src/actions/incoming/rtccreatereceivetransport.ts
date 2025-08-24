@@ -5,16 +5,16 @@ import { app } from '../../index.js'
 import { RTCCreateReceiveTransportAction as OutgoingRTCCreateReceiveTransportAction } from '../outgoing/rtccreatereceivetransport.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface RTCCreateTransportData {
+interface Payload {
     sctpCapabilities: types.SctpCapabilities
     channelId: string
 }
 
 export class RTCCreateReceiveTransportAction extends BaseAction {
     public static identifier = 'rtccreatereceivetransport'
-    public body: { data: RTCCreateTransportData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCCreateTransportData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

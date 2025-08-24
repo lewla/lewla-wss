@@ -1,32 +1,20 @@
+import { readdirSync } from 'fs'
 import { type BaseAction } from '../base.js'
-import { ConnectedAction } from './connected.js'
-import { RegisterAction } from './register.js'
-import { AuthAction } from './auth.js'
-import { PingAction } from './ping.js'
-import { LoginAction } from './login.js'
-import { MessageAction } from './message.js'
-import { VoiceConnectAction } from './voiceconnect.js'
-import { RTCCreateSendTransportAction } from './rtccreatesendtransport.js'
-import { RTCCreateReceiveTransportAction } from './rtccreatereceivetransport.js'
-import { RTCTransportConnectAction } from './rtctransportconnect.js'
-import { RTCTransportProduceAction } from './rtctransportproduce.js'
-import { RTCTransportConsumeAction } from './rtctransportconsume.js'
-import { RTCGetProducersAction } from './rtcgetproducers.js'
-import { RTCProducerCloseAction } from './rtcproducerclose.js'
+import path from 'path'
 
-export const actions = new Map<string, typeof BaseAction>([
-    [ConnectedAction.identifier, ConnectedAction],
-    [RegisterAction.identifier, RegisterAction],
-    [AuthAction.identifier, AuthAction],
-    [PingAction.identifier, PingAction],
-    [LoginAction.identifier, LoginAction],
-    [MessageAction.identifier, MessageAction],
-    [VoiceConnectAction.identifier, VoiceConnectAction],
-    [RTCCreateSendTransportAction.identifier, RTCCreateSendTransportAction],
-    [RTCCreateReceiveTransportAction.identifier, RTCCreateReceiveTransportAction],
-    [RTCTransportConnectAction.identifier, RTCTransportConnectAction],
-    [RTCTransportProduceAction.identifier, RTCTransportProduceAction],
-    [RTCTransportConsumeAction.identifier, RTCTransportConsumeAction],
-    [RTCGetProducersAction.identifier, RTCGetProducersAction],
-    [RTCProducerCloseAction.identifier, RTCProducerCloseAction],
-])
+export const actions = new Map<string, typeof BaseAction>()
+
+const dir = path.resolve(process.cwd(), './dist/actions/incoming')
+const actionFiles = readdirSync(dir).filter((file) => file !== 'index.js' && file.endsWith('.js'))
+
+const loadClasses = async (): Promise<void> => {
+    for (const file of actionFiles) {
+        const classModule: Record<string, typeof BaseAction> = await import('./' + file)
+        const className: string = Object.keys(classModule)[0]
+        const actionClass = classModule[className]
+
+        actions.set(actionClass.identifier, actionClass)
+    }
+}
+
+loadClasses().catch((error) => { console.error(error) })

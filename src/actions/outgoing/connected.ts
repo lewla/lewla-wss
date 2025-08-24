@@ -1,16 +1,16 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface ConnectedData {
+interface Payload {
     member: string
     timestamp?: number
 }
 
 export class ConnectedAction extends BaseAction {
     public static identifier = 'connected'
-    public body: { data: ConnectedData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: ConnectedData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 

@@ -1,7 +1,7 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface SetupData {
+interface Payload {
     channels: Array<{
         id: string
         type: string
@@ -39,9 +39,9 @@ interface SetupData {
 
 export class SetupAction extends BaseAction {
     public static identifier = 'setup'
-    public body: { data: SetupData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: SetupData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
     }

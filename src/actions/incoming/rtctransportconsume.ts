@@ -5,7 +5,7 @@ import { app } from '../../index.js'
 import { sendError } from '../../helpers/messaging.js'
 import { RTCConsumeProducerAction } from '../outgoing/rtcconsumeproucer.js'
 
-interface RTCTransportConsumeData {
+interface Payload {
     transportId: string
     producerId: string
     rtpCapabilities: types.RtpCapabilities
@@ -14,9 +14,9 @@ interface RTCTransportConsumeData {
 
 export class RTCTransportConsumeAction extends BaseAction {
     public static identifier = 'rtctransportconsume'
-    public body: { data: RTCTransportConsumeData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: RTCTransportConsumeData }, id?: string) {
+    constructor (sender: WebSocket, body: { data: Payload }, id?: string) {
         super(sender, body, id)
         this.body = body
 

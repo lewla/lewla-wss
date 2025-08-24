@@ -1,15 +1,15 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface TokenData {
+interface Payload {
     token: string
 }
 
 export class TokenAction extends BaseAction {
     public static identifier = 'token'
-    public body: { data: TokenData }
+    public body: { data: Payload }
 
-    constructor (sender: WebSocket, body: { data: TokenData }) {
+    constructor (sender: WebSocket, body: { data: Payload }) {
         super(sender, body)
         this.body = body
 
