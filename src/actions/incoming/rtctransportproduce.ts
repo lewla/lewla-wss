@@ -7,6 +7,7 @@ import { sendError } from '../../helpers/messaging.js'
 import { RTCNewProducerAction } from '../outgoing/rtcnewproducer.js'
 import { RTCProducerClosedAction } from '../outgoing/rtcproducerclosed.js'
 import { VoiceDisconnectAction } from '../outgoing/voicedisconnect.js'
+import { Channel } from '../../db/entity/channel.js'
 
 interface RTCTransportProduceData {
     transportId: string
@@ -35,9 +36,13 @@ export class RTCTransportProduceAction extends BaseAction {
         }
     }
 
-    public handle (): void {
+    public async handle (): Promise<void> {
         const member = app.connections.get(this.sender)?.member
-        const channel = app.channels.get(this.body.data.channelId)
+        const channel = await app.dataSource
+            .getRepository(Channel)
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: this.body.data.channelId })
+            .getOne()
 
         if (member === undefined) {
             sendError(this.sender, 'Invalid member', this.id)
@@ -46,7 +51,7 @@ export class RTCTransportProduceAction extends BaseAction {
 
         const transport = app.sfu.transports.get(this.body.data.transportId)
 
-        if (transport === undefined || channel === undefined) {
+        if (transport === undefined || channel === null) {
             return
         }
 

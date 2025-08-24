@@ -4,8 +4,9 @@ import { app } from '../../index.js'
 import { sendError } from '../../helpers/messaging.js'
 import { randomUUID } from 'crypto'
 import { MessageAction as OutgoingMessageAction } from '../outgoing/message.js'
-import * as messageModel from '../../db/message.js'
 import { escapeHtmlChars } from '../../helpers/text.js'
+import { Message } from '../../db/entity/message.js'
+import { Channel } from '../../db/entity/channel.js'
 
 interface MessageData {
     channel: string
@@ -36,15 +37,19 @@ export class MessageAction extends BaseAction {
         }
     }
 
-    public handle (): void {
+    public async handle (): Promise<void> {
         const member = app.connections.get(this.sender)?.member
-        const channel = app.channels.get(this.body.data.channel)
+        const channel = await app.dataSource
+            .getRepository(Channel)
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: this.body.data.channel })
+            .getOne()
 
         if (member === undefined) {
             sendError(this.sender, 'Invalid member', this.id)
             return
         }
-        if (channel === undefined) {
+        if (channel === null) {
             sendError(this.sender, 'Invalid channel', this.id)
             return
         }
@@ -58,34 +63,38 @@ export class MessageAction extends BaseAction {
 
         const messageData = {
             id,
-            channel: channel.id,
-            member: member.id,
-            timestamp,
+            channel: { id: channel.id },
+            member: { id: member.id },
+            created_at: timestamp,
             type: this.body.data.type,
             body: this.body.data.body
         }
 
-        messageModel.create(messageData).catch(
-            (error) => {
-                console.error(error)
-            }
-        )
-        app.messages.set(messageData.id, messageData)
+        const insert = app.dataSource
+            .createQueryBuilder()
+            .insert()
+            .into(Message)
+            .values([messageData])
+            .execute()
 
-        const message = new OutgoingMessageAction(
-            this.sender,
-            {
-                data: {
-                    id,
-                    member: member.id,
-                    timestamp,
-                    channel: channel.id,
-                    type: this.body.data.type,
-                    body: this.body.data.body
+        insert.then((result) => {
+            const message = new OutgoingMessageAction(
+                this.sender,
+                {
+                    data: {
+                        id,
+                        member: member.id,
+                        timestamp,
+                        channel: channel.id,
+                        type: this.body.data.type,
+                        body: this.body.data.body
+                    }
                 }
-            }
-        )
+            )
 
-        message.send(app.wss.clients)
+            message.send(app.wss.clients)
+        }).catch((error) => {
+            console.error(error)
+        })
     }
 }

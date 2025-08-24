@@ -7,6 +7,9 @@ import { SetupAction } from '../outgoing/setup.js'
 import { sendError } from '../../helpers/messaging.js'
 import { UnauthAction } from '../outgoing/unauth.js'
 import { MemberStatusChangeAction } from '../outgoing/memberstatuschange.js'
+import { Member } from '../../db/entity/member.js'
+import { Channel } from '../../db/entity/channel.js'
+import { Message } from '../../db/entity/message.js'
 
 interface AuthData {
     token: string
@@ -27,14 +30,11 @@ export class AuthAction extends BaseAction {
         }
     }
 
-    public handle (): void {
-        jwt.verify(this.body.data.token, process.env.JWT_SECRET ?? '', (err, decoded) => {
-            if (err !== null) {
-                sendError(this.sender, 'Invalid token payload', this.id)
-                new UnauthAction(this.sender, { data: { message: 'Login required' } }).send(this.sender)
-                return
-            }
-            if (decoded === undefined || typeof decoded === 'string') {
+    public async handle (): Promise<void> {
+        try {
+            const decoded = jwt.verify(this.body.data.token, process.env.JWT_SECRET ?? '')
+
+            if (typeof decoded === 'string') {
                 sendError(this.sender, 'Invalid token payload', this.id)
                 new UnauthAction(this.sender, { data: { message: 'Login required' } }).send(this.sender)
                 return
@@ -47,17 +47,41 @@ export class AuthAction extends BaseAction {
                 return
             }
 
-            const member = app.members.get(memberId)
-            if (member === undefined) {
+            const member = await app.dataSource
+                .getRepository(Member)
+                .createQueryBuilder('member')
+                .where('member.id = :id', { id: memberId })
+                .getOne()
+
+            if (member === null) {
                 sendError(this.sender, 'Invalid token payload', this.id)
                 new UnauthAction(this.sender, { data: { message: 'Login required' } }).send(this.sender)
                 return
             }
 
-            app.connections.set(this.sender, { member: { id: member.id, avatar_url: member.avatar_url, creation_date: member.creation_date, display_name: member.display_name, username: member.username } })
+            app.connections.set(this.sender, { member: { id: member.id, avatar_url: member.avatar_url, created_at: member.created_at, display_name: member.display_name, username: member.username } })
 
             const onlineMembers = Array.from(app.connections.values()).map(connection => connection.member)
             const onlineMembersIds = onlineMembers.map(onlineMember => onlineMember?.id)
+
+            const channels = await app.dataSource
+                .getRepository(Channel)
+                .createQueryBuilder('channel')
+                .getMany()
+
+            const members = await app.dataSource
+                .getRepository(Member)
+                .createQueryBuilder('member')
+                .getMany()
+
+            const messages = await app.dataSource
+                .getRepository(Message)
+                .find({
+                    relations: {
+                        member: true,
+                        channel: true,
+                    }
+                })
 
             const authenticatedAction = new AuthenticatedAction(
                 this.sender,
@@ -67,7 +91,7 @@ export class AuthAction extends BaseAction {
                             id: member.id,
                             username: member.username,
                             display_name: member.display_name,
-                            creation_date: member.creation_date.toISOString(),
+                            creation_date: member.created_at.toISOString(),
                             avatar_url: member.avatar_url,
                         }
                     }
@@ -89,21 +113,32 @@ export class AuthAction extends BaseAction {
 
             const setupAction = new SetupAction(this.sender, {
                 data: {
-                    channels: Array.from(app.channels.values()),
-                    members: Array.from(app.members.values()).map(
+                    channels,
+                    members: members.map(
                         member => {
                             return {
                                 id: member.id,
                                 type: 'user',
                                 avatar_url: member.avatar_url,
-                                creation_date: member.creation_date.toISOString(),
+                                creation_date: member.created_at.toISOString(),
                                 display_name: member.display_name,
                                 username: member.username,
                                 status: onlineMembersIds.includes(member.id) ? 'online' : 'offline'
                             }
                         }
                     ),
-                    messages: Array.from(app.messages.values()),
+                    messages: messages.map(
+                        message => {
+                            return {
+                                id: message.id,
+                                type: message.type,
+                                member: message.member.id,
+                                channel: message.channel.id,
+                                body: message.body,
+                                timestamp: message.created_at.toISOString(),
+                            }
+                        }
+                    ),
                     voiceUsers
                 }
             })
@@ -113,6 +148,10 @@ export class AuthAction extends BaseAction {
 
             const statusMsg = new MemberStatusChangeAction(this.sender, { data: { member: member.id, status: 'online' } })
             statusMsg.send(app.wss.clients)
-        })
+        } catch (error) {
+            console.error(error)
+            sendError(this.sender, 'Invalid token payload', this.id)
+            new UnauthAction(this.sender, { data: { message: 'Login required' } }).send(this.sender)
+        }
     }
 }

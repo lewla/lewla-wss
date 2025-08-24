@@ -3,6 +3,7 @@ import { BaseAction } from '../base.js'
 import type { types } from 'mediasoup'
 import { app } from '../../index.js'
 import { RTCCreateSendTransportAction as OutgoingRTCCreateSendTransportAction } from '../outgoing/rtccreatesendtransport.js'
+import { Channel } from '../../db/entity/channel.js'
 
 interface RTCCreateTransportData {
     sctpCapabilities: types.SctpCapabilities
@@ -29,7 +30,11 @@ export class RTCCreateSendTransportAction extends BaseAction {
         const router = app.sfu.routers.get(this.body.data.channelId)
         const worker = app.sfu.workers.get('test')
         const member = app.connections.get(this.sender)?.member
-        const channel = app.channels.get(this.body.data.channelId)
+        const channel = await app.dataSource
+            .getRepository(Channel)
+            .createQueryBuilder('channel')
+            .where('channel.id = :id', { id: this.body.data.channelId })
+            .getOne()
 
         if (worker === undefined) {
             return
@@ -37,7 +42,7 @@ export class RTCCreateSendTransportAction extends BaseAction {
 
         const server = app.sfu.servers.get(worker)
 
-        if (server === undefined || router === undefined || member === undefined || channel === undefined) {
+        if (server === undefined || router === undefined || member === undefined || channel === null) {
             return
         }
 
