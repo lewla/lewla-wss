@@ -5,7 +5,7 @@ import { VoiceConnectAction as OutgoingVoiceConnectAction } from '../outgoing/vo
 import { RTPCapabilitiesAction } from '../outgoing/rtpcapabilities.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface Payload {
+export interface Payload {
     channel: string
 }
 

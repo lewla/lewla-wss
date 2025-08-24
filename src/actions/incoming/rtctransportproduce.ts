@@ -9,7 +9,7 @@ import { RTCProducerClosedAction } from '../outgoing/rtcproducerclosed.js'
 import { VoiceDisconnectAction } from '../outgoing/voicedisconnect.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface Payload {
+export interface Payload {
     transportId: string
     kind: types.MediaKind
     rtpParameters: types.RtpParameters

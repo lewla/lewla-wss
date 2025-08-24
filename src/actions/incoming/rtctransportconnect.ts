@@ -4,7 +4,7 @@ import type { types } from 'mediasoup'
 import { app } from '../../index.js'
 import { RTCTransportConnectedAction } from '../outgoing/rtctransportconnected.js'
 
-interface Payload {
+export interface Payload {
     transportId: string
     dtlsParameters: types.DtlsParameters
     channelId: string

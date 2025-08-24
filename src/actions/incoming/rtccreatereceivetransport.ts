@@ -5,7 +5,7 @@ import { app } from '../../index.js'
 import { RTCCreateReceiveTransportAction as OutgoingRTCCreateReceiveTransportAction } from '../outgoing/rtccreatereceivetransport.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface Payload {
+export interface Payload {
     sctpCapabilities: types.SctpCapabilities
     channelId: string
 }
