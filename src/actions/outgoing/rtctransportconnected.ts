@@ -1,7 +1,7 @@
 import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 
-interface Payload {
+export interface Payload {
     id: string
 }
 

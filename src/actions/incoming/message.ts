@@ -8,7 +8,7 @@ import { escapeHtmlChars } from '../../helpers/text.js'
 import { Message } from '../../db/entity/message.js'
 import { Channel } from '../../db/entity/channel.js'
 
-interface Payload {
+export interface Payload {
     channel: string
     type: string
     body: {

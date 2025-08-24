@@ -2,7 +2,7 @@ import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 import type { types } from 'mediasoup'
 
-interface Payload {
+export interface Payload {
     producerId: string
     rtpParameters: types.RtpParameters
     memberId: string

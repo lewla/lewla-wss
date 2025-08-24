@@ -5,7 +5,7 @@ import { app } from '../../index.js'
 import { sendError } from '../../helpers/messaging.js'
 import { RTCConsumeProducerAction } from '../outgoing/rtcconsumeproucer.js'
 
-interface Payload {
+export interface Payload {
     transportId: string
     producerId: string
     rtpCapabilities: types.RtpCapabilities

@@ -3,7 +3,7 @@ import { BaseAction } from '../base.js'
 import { app } from '../../index.js'
 import { RTCNewProducerAction } from '../outgoing/rtcnewproducer.js'
 
-interface Payload {
+export interface Payload {
     channelId: string
 }
 

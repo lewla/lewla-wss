@@ -9,7 +9,7 @@ import { TokenAction } from '../outgoing/token.js'
 import { Member } from '../../db/entity/member.js'
 import { MemberRegisteredAction } from '../outgoing/memberregistered.js'
 
-interface Payload {
+export interface Payload {
     username: string
     password: string
     email_address?: string

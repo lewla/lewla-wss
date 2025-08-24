@@ -7,7 +7,7 @@ import { sendError, sendSuccess } from '../../helpers/messaging.js'
 import { Member } from '../../db/entity/member.js'
 import { app } from '../../index.js'
 
-interface Payload {
+export interface Payload {
     username: string
     password: string
 }

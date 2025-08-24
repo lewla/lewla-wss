@@ -2,7 +2,7 @@ import { type WebSocket } from 'ws'
 import { BaseAction } from '../base.js'
 import { app } from '../../index.js'
 
-interface Payload {
+export interface Payload {
     producerId: string
 }
 
