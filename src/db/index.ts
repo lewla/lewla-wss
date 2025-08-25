@@ -14,7 +14,7 @@ const AppDataSource = new DataSource({
     port: Number(process.env.DB_PORT) ?? 5432,
     entities: [Member, Message, Channel],
     synchronize: true,
-    logging: false,
+    logging: ['error', 'warn'],
     migrations: ['dist/db/migrations/*.js'],
 })
 
