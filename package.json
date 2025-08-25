@@ -4,7 +4,7 @@
     "start": "npm run start:prod",
     "start:prod": "cross-env NODE_ENV=production node --env-file=.env dist/index.js",
     "start:dev": "cross-env NODE_ENV=development node --env-file=.env dist/index.js",
-    "build": "tsc",
+    "build": "tsc --build",
     "lint": "eslint \"src/**/*.ts\"",
     "migration:generate": "typeorm-ts-node-esm migration:generate ./src/db/migrations/InitSchema -d ./src/db/index.ts",
     "migration:run": "typeorm-ts-node-esm migration:run -d ./src/db/index.ts"

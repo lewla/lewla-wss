@@ -23,6 +23,7 @@
 	"ignorePatterns": [
 		"src/db/migrations/*.ts",
 		"plop-templates/*.js",
-		"plopfile*.js"
+		"plopfile*.js",
+		"dist/**/*.js"
 	]
 }
