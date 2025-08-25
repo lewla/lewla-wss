@@ -11,7 +11,7 @@ import { Member } from '../../db/entity/member.js'
 import { Channel } from '../../db/entity/channel.js'
 import { Message } from '../../db/entity/message.js'
 
-interface Payload {
+export interface Payload {
     token: string
 }
 
