@@ -1,0 +1,70 @@
+name: 'lewla'
+
+services:
+  wss:
+    build: .
+    image: lewla/lewla-server:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      coturn:
+        condition: service_started
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_DATABASE}
+      DB_PORT: ${DB_PORT}
+    ports:
+      - "8280:8280"
+      - "20000:20000/tcp"
+      - "20000:20000/udp"
+    networks:
+      - lewla
+    shm_size: 1gb
+    env_file:
+      - ./.env
+
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - lewla
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    env_file:
+      - ./.env
+
+  coturn:
+    image: coturn/coturn
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - ./.env
+    command: >
+      turnserver
+      -n 
+      --log-file=stdout
+      --use-auth-secret
+      --static-auth-secret=${TURN_SECRET}
+      --realm=${PUBLIC_HOSTNAME}
+
+volumes:
+  pgdata:
+
+networks:
+  lewla:

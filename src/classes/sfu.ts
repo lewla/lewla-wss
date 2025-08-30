@@ -36,7 +36,7 @@ export class SFU {
             ]
         })
 
-        if (router instanceof mediasoup.types.Router) {
+        if (router !== undefined) {
             return router
         } else {
             throw Error('Error creating SFU router')
@@ -45,7 +45,8 @@ export class SFU {
 
     protected async createWorker (): Promise<mediasoup.types.Worker> {
         const worker = await mediasoup.createWorker({
-            logLevel: 'debug'
+            logLevel: 'debug',
+            disableLiburing: true
         })
         const server = await worker.createWebRtcServer({
             listenInfos: [
