@@ -7,9 +7,13 @@ on:
         branches: ["master"]
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
+  build-amd64:
+    name: Build AMD64 Image
+    runs-on: ubuntu-22.04
     steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
       -
         name: Login to Docker Hub
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -18,14 +22,56 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build and push AMD64
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          tags: lewla/lewla-server:amd64-${{ github.sha }}
+
+  build-arm64:
+    name: Build ARM64 Image
+    runs-on: ubuntu-22.04-arm
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v4
+      -
+        name: Login to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
-        name: Build and push
+        name: Build and push ARM64
         uses: docker/build-push-action@v6
         with:
+          platforms: linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-          tags: lewla/lewla-server:latest
+          tags: lewla/lewla-server:arm64-${{ github.sha }}
+
+  create-manifest:
+    name: Create Multi-arch Manifest
+    runs-on: ubuntu-latest
+    needs: [build-amd64, build-arm64]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Create and push manifest
+        run: |
+          docker buildx imagetools create \
+            -t lewla/lewla-server:latest \
+            lewla/lewla-server:amd64-${{ github.sha }} \
+            lewla/lewla-server:arm64-${{ github.sha }}
