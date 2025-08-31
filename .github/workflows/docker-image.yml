@@ -22,6 +22,10 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Set vars
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
@@ -30,7 +34,7 @@ jobs:
         with:
           platforms: linux/amd64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-          tags: lewla/lewla-server:amd64-${{ github.sha }}
+          tags: lewla/lewla-server:amd64-${{ steps.vars.outputs.sha_short }}
           build-args:
             COMMIT_SHA=${{ github.sha }}
 
@@ -49,6 +53,10 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Set vars
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
@@ -57,7 +65,7 @@ jobs:
         with:
           platforms: linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-          tags: lewla/lewla-server:arm64-${{ github.sha }}
+          tags: lewla/lewla-server:arm64-${{ steps.vars.outputs.sha_short }}
           build-args:
             COMMIT_SHA=${{ github.sha }}
 
@@ -72,11 +80,14 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
+      -
+        name: Set vars
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Create and push manifest
         run: |
           docker buildx imagetools create \
             -t lewla/lewla-server:latest \
-            -t lewla/lewla-server:${{ github.sha }} \
-            lewla/lewla-server:amd64-${{ github.sha }} \
-            lewla/lewla-server:arm64-${{ github.sha }}
+            -t lewla/lewla-server:${{ steps.vars.outputs.sha_short }} \
+            lewla/lewla-server:amd64-${{ steps.vars.outputs.sha_short }} \
+            lewla/lewla-server:arm64-${{ steps.vars.outputs.sha_short }}
