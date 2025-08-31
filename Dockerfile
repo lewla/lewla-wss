@@ -1,5 +1,3 @@
-ARG COMMIT_SHA
-
 FROM node:20-bullseye AS builder
 WORKDIR /app
 RUN apt-get update && apt-get install -y \
@@ -18,6 +16,7 @@ COPY . .
 RUN npm run build
 
 FROM node:20-bullseye-slim AS production
+ARG COMMIT_SHA
 LABEL org.opencontainers.image.title="lewla chat server" \
       org.opencontainers.image.description="server components for lewla chat" \
       org.opencontainers.image.vendor="lewla" \
