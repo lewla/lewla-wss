@@ -6,7 +6,7 @@
     "start:dev": "cross-env NODE_ENV=development node --env-file=.env dist/index.js",
     "build": "tsc --build",
     "lint": "eslint \"src/**/*.ts\"",
-    "migration:generate": "typeorm migration:generate ./src/db/migrations/InitSchema -d ./src/db/index.ts",
+    "migration:generate": "typeorm-ts-node-esm migration:generate ./src/db/migrations/InitSchema -d ./src/db/index.ts",
     "migration:run": "typeorm migration:run -d ./dist/db/index.js"
   },
   "dependencies": {

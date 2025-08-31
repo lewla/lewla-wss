@@ -1,3 +1,5 @@
+ARG COMMIT_SHA
+
 FROM node:20-bullseye AS builder
 WORKDIR /app
 RUN apt-get update && apt-get install -y \
@@ -21,7 +23,8 @@ LABEL org.opencontainers.image.title="lewla chat server" \
       org.opencontainers.image.vendor="lewla" \
       org.opencontainers.image.url="https://lew.la" \
       org.opencontainers.image.source="https://github.com/lewla/lewla-wss" \
-      org.opencontainers.image.licenses="MIT"
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.revision=$COMMIT_SHA
 WORKDIR /app
 RUN apt-get update && apt-get install -y \
     python3 \

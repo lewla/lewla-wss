@@ -31,6 +31,8 @@ jobs:
           platforms: linux/amd64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           tags: lewla/lewla-server:amd64-${{ github.sha }}
+          build-args:
+            COMMIT_SHA=${{ github.sha }}
 
   build-arm64:
     name: Build ARM64 Image
@@ -56,6 +58,8 @@ jobs:
           platforms: linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
           tags: lewla/lewla-server:arm64-${{ github.sha }}
+          build-args:
+            COMMIT_SHA=${{ github.sha }}
 
   create-manifest:
     name: Create Multi-arch Manifest
@@ -73,5 +77,6 @@ jobs:
         run: |
           docker buildx imagetools create \
             -t lewla/lewla-server:latest \
+            -t lewla/lewla-server:${{ github.sha }} \
             lewla/lewla-server:amd64-${{ github.sha }} \
             lewla/lewla-server:arm64-${{ github.sha }}
