@@ -32,6 +32,9 @@ RUN ln -sf python3 /usr/bin/python
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/dist ./dist
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 RUN npm ci --omit=dev
 EXPOSE 8280
 CMD ["node", "dist/index.js"]
