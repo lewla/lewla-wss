@@ -27,7 +27,8 @@ LABEL org.opencontainers.image.title="lewla chat server" \
 WORKDIR /app
 RUN apt-get update && apt-get install -y \
     python3 \
-    python3-pip
+    python3-pip \
+    netcat-traditional
 RUN ln -sf python3 /usr/bin/python
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
